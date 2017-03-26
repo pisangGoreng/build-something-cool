@@ -1,0 +1,122 @@
+<script type="text/javascript">
+    if (window.localStorage.token) {
+        console.log('ada isi');
+    } else {
+        window.location.href = "index.html";
+    }
+</script>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <link href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="http://pingendo.github.io/pingendo-bootstrap/themes/default/bootstrap.css" rel="stylesheet" type="text/css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/js/materialize.min.js"></script>
+    <script src="http://canvasjs.com/assets/script/canvasjs.min.js"></script>
+    <script type="text/javascript">
+    </script>
+</head>
+
+<body>
+    <div class="navbar navbar-default navbar-static-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-ex-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+                <a class="navbar-brand" href="#"><span>Data</span></a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar-ex-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="active">
+                        <a href="login.html">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <br>
+    <br>
+    <div class="section">
+        <div class="container">
+            <blockquote>
+                <p>In this financial year we will be spending at least $1.5 billion on foreign aid and we cannot be sure that this money will be properly spent, as corruption and mismanagement in many of the recipient countries are legend.</p>
+                <footer>Pauline Hanson</footer>
+            </blockquote>
+            <div id="chartContainer" style="height: 300px; width: 600px;"></div>
+            <p>Silahkan pilih negara</p>
+            <form>
+                <select name="country">
+                  <option value="id">Indonesia</option>
+                  <option value="my">Malaysia</option>
+                  <option value="sg">Singapore</option>
+                  <option value="ph">Filipina</option>
+                  <option value="th">Thailand</option>
+                  <option value="vn">Vietnam</option>
+                  <option value="bn">Brunai Darusallam</option>
+                  <option value="mm">Myanmar</option>
+                  <option value="kh">Kamboja</option>
+                </select>
+                <input type="button" name="" value="Submit" onclick="getData()">
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>
+<script>
+    function getData() {
+        console.log('masuk ke ajax');
+        $.ajax({
+            url: "http://localhost:3000/corupt/" + $("select[name='country']").val(),
+            type: "GET",
+            success: function(data) {
+                // data = JSON.parse(data)
+                console.log(data[0].corruption_index[1].data);
+                console.log(JSON.stringify(data))
+
+                var chart = new CanvasJS.Chart("chartContainer", {
+                    title: {
+                        text: `Grafik data peringkat korupsi negara ${data[0].countryName}`
+                    },
+                    data: [{
+                        // Change type to "doughnut", "line", "splineArea", etc.
+                        type: "column",
+                        dataPoints: [{
+                                label: data[0].corruption_index[0].year,
+                                y: Number(data[0].corruption_index[1].data)
+                            },
+                            {
+                                label: data[0].corruption_index[1].year,
+                                y: Number(data[0].corruption_index[1].data)
+                            },
+                            {
+                                label: data[0].corruption_index[2].year,
+                                y: Number(data[0].corruption_index[2].data)
+                            },
+                            {
+                                label: data[0].corruption_index[3].year,
+                                y: Number(data[0].corruption_index[3].data)
+                            },
+                            {
+                                label: data[0].corruption_index[4].year,
+                                y: Number(data[0].corruption_index[4].data)
+                            }
+                        ]
+                    }]
+                });
+                chart.render();
+
+            },
+            fail: function(err) {
+                console.log(err);
+            },
+        });
+    }
+</script>
